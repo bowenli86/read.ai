@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, ZIP_STORED
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "Tests" / "Fixtures"
+ZIP_TIMESTAMP = (2026, 1, 1, 0, 0, 0)
 
 
 def pdf_object(number: int, body: str) -> bytes:
@@ -79,11 +80,17 @@ def write_epub(path: Path) -> None:
   </body>
 </html>
 """
+    def write_member(zf: ZipFile, name: str, content: str, compression: int) -> None:
+        info = ZipInfo(name, ZIP_TIMESTAMP)
+        info.compress_type = compression
+        info.external_attr = 0o644 << 16
+        zf.writestr(info, content)
+
     with ZipFile(path, "w") as zf:
-        zf.writestr("mimetype", "application/epub+zip", compress_type=ZIP_STORED)
-        zf.writestr("META-INF/container.xml", container, compress_type=ZIP_DEFLATED)
-        zf.writestr("OEBPS/content.opf", opf, compress_type=ZIP_DEFLATED)
-        zf.writestr("OEBPS/chapter1.xhtml", chapter, compress_type=ZIP_DEFLATED)
+        write_member(zf, "mimetype", "application/epub+zip", ZIP_STORED)
+        write_member(zf, "META-INF/container.xml", container, ZIP_DEFLATED)
+        write_member(zf, "OEBPS/content.opf", opf, ZIP_DEFLATED)
+        write_member(zf, "OEBPS/chapter1.xhtml", chapter, ZIP_DEFLATED)
 
 
 def main() -> None:
