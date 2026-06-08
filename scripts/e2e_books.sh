@@ -2,14 +2,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP="$ROOT/.build/ReadAI.app"
-RESOURCES="$APP/Contents/Resources"
+RUNNER="$ROOT/scripts/run_e2e_swift.sh"
 PDF="$ROOT/Tests/Fixtures/readai-e2e.pdf"
 EPUB="$ROOT/Tests/Fixtures/readai-e2e.epub"
 STATUS_DIR="$ROOT/.build/e2e"
 
 python3 "$ROOT/scripts/make_fixtures.py" >/dev/null
-bash "$ROOT/scripts/build_app.sh" >/dev/null
 mkdir -p "$STATUS_DIR"
 
 run_case() {
@@ -17,11 +15,13 @@ run_case() {
   local file="$2"
   local style="$3"
   local status="$STATUS_DIR/$name-$style.json"
+  local state="$STATUS_DIR/$name-$style-state.json"
 
-  rm -f "$status"
+  rm -f "$status" "$state"
   if [ "$style" = "page" ]; then
-    READAI_APP_RESOURCES="$RESOURCES" python3 "$ROOT/scripts/run_with_timeout.py" \
-      /usr/bin/osascript -l JavaScript "$RESOURCES/ReadAI.jxa.js" -- \
+    READAI_STATE_PATH="$state" python3 "$ROOT/scripts/run_with_timeout.py" \
+      /bin/bash \
+      "$RUNNER" \
       --e2e-status-path "$status" \
       --e2e-reading-style "$style" \
       --e2e-font-size 22 \
@@ -30,8 +30,9 @@ run_case() {
       --e2e-exit-after-open \
       "$file" >/dev/null
   else
-    READAI_APP_RESOURCES="$RESOURCES" python3 "$ROOT/scripts/run_with_timeout.py" \
-      /usr/bin/osascript -l JavaScript "$RESOURCES/ReadAI.jxa.js" -- \
+    READAI_STATE_PATH="$state" python3 "$ROOT/scripts/run_with_timeout.py" \
+      /bin/bash \
+      "$RUNNER" \
       --e2e-status-path "$status" \
       --e2e-reading-style "$style" \
       --e2e-font-size 22 \

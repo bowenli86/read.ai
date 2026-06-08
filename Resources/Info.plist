@@ -8,6 +8,10 @@
   <string>ReadAI</string>
   <key>CFBundleIdentifier</key>
   <string>ai.read.native</string>
+  <key>CFBundleIconFile</key>
+  <string>ReadAI</string>
+  <key>CFBundleIconName</key>
+  <string>ReadAI</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>

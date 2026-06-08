@@ -1,4 +1,8 @@
-import SwiftUI
+import Darwin
+import Foundation
 
-E2ERunner.runIfRequested()
+if E2EOptions.isRequested {
+    E2ERunner.runIfRequested()
+}
+
 ReadAIApp.main()

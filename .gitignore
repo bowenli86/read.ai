@@ -1,5 +1,7 @@
 .DS_Store
 .build/
+.app-build/
+Resources/ReadAI.iconset/
 DerivedData/
 *.xcuserdata/
 __pycache__/

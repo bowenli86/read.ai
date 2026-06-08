@@ -1,0 +1,13 @@
+name: ReadAI Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run full test suite
+        run: bash scripts/test_all.sh
